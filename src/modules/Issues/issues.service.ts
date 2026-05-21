@@ -107,8 +107,13 @@ const getSingleIssueFromDB = async (id: string) => {
         `
             SELECT id,name,role from users WHERE id = $1
             `,
-        [issue.id]
+        [issue.reporter_id]
     );
+    if(reporterFound.rows.length === 0){
+           
+        throw new Error("Reporter not found!");
+    
+    }
     const reporter = reporterFound.rows[0];
 
     const finalIssue = {
@@ -134,13 +139,16 @@ const updateSingleIssueInDB = async (
     user: JwtPayload,
     payload: TissuesFull
 ) => {
+   
     const findIssue = await pool.query(
         `
         SELECT * FROM issues WHERE id=$1
         `,
         [id]
     );
-
+    if(findIssue.rows.length ===0){
+        throw new Error("No issues found on this id!");
+    }
     const issue = findIssue.rows[0];
     const {
         title,
