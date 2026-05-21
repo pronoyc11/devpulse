@@ -7,5 +7,5 @@ import { USER_ROLES } from "../../utility/sendResponse";
 const router = express.Router();
 
 router.post("/", authenticate(USER_ROLES.contributor, USER_ROLES.maintainer), issuesController.createIssues);
-
+router.get("/", issuesController.getAllIssues);
 export const issuesRouter = router;

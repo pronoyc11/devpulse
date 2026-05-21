@@ -14,3 +14,9 @@ export type JwtPayload = {
     name: string,
     role: string
 }
+
+export type Query = {
+    sort?: 'newest' | "oldest",
+    type?: 'bug' | 'feature_request',
+    status?: 'open' | 'in_progress' | 'resolved'
+};
