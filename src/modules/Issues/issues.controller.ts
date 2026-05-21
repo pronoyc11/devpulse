@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { getErrorMessage, sendResponse } from "../../utility/sendResponse";
 import { issuesService } from "./issues.service";
-import type { Query } from "../../types";
+import type { JwtPayload, Query } from "../../types";
 
 
 const createIssues = async (req: Request, res: Response) => {
@@ -32,10 +32,6 @@ const getAllIssues = async (req: Request, res: Response) => {
 
     try {
         const result = await issuesService.getAllIssuesFromDB(req.query as Query);
-
-
-
-
         return res.status(200).json({
             success: true,
             data: result
@@ -51,6 +47,47 @@ const getAllIssues = async (req: Request, res: Response) => {
 
 }
 
+const getSingleIssue = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const result = await issuesService.getSingleIssueFromDB(id as string)
+
+        return res.status(200).json({
+            success: true,
+            data: result
+        })
+    } catch (error) {
+        sendResponse(res, {
+            status: 500,
+            success: false,
+            message: getErrorMessage(error),
+            error: error
+        })
+    }
+}
+
+const updateSingleIssue = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        
+        const result = await issuesService.updateSingleIssueInDB(id as string,req.user as JwtPayload);
+
+        sendResponse(res, {
+            status: 200,
+            success: true,
+            message: "Issue updated successfully",
+            data: result
+        })
+
+    } catch (error) {
+        sendResponse(res, {
+            status: 500,
+            success: false,
+            message: getErrorMessage(error),
+            error: error
+        })
+    }
+}
 export const issuesController = {
-    createIssues, getAllIssues
+    createIssues, getAllIssues, getSingleIssue,updateSingleIssue
 }

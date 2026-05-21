@@ -8,4 +8,6 @@ const router = express.Router();
 
 router.post("/", authenticate(USER_ROLES.contributor, USER_ROLES.maintainer), issuesController.createIssues);
 router.get("/", issuesController.getAllIssues);
+router.get("/:id", issuesController.getSingleIssue);
+router.patch("/:id",authenticate(USER_ROLES.contributor, USER_ROLES.maintainer),issuesController.updateSingleIssue);
 export const issuesRouter = router;
