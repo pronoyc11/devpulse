@@ -19,24 +19,31 @@ const createIssuesInDB = async (id: string, payload: Tissues) => {
 
 const getAllIssuesFromDB = async (allQuery: Query) => {
     const { sort = "newest", type, status } = allQuery;
+    //BASE QUERY
     let query = `SELECT * FROM issues`;
+
+    //SETTING UP ARRAYS TO STORE QUERY PARAMS AND CONDITIONAL TEXT FOR ADDING TO THE QUERY 
     const conditions: string[] = [];
     const values: string[] = [];
 
     if (type) {
+        //SETTING UP VALUES AND QUERY CONDITIONS FOR type PARAM.
         values.push(type);
         conditions.push(`type = $${values.length}`);
     }
 
     if (status) {
+        //SETTING UP VALUES AND QUERY CONDITIONS FOR status PARAM.
         values.push(status);
         conditions.push(`status = $${values.length}`);
     }
 
     if (conditions.length > 0) {
+    //ADDING THE CONDITIONS TO THE QUERY
         query += ` WHERE ${conditions.join(" AND ")}`;
     }
 
+    //FOR SHOWING THE NEWEST OF OLDEST
     if (sort === "oldest") {
         query += ` ORDER BY created_at ASC`;
     } else {
@@ -46,22 +53,27 @@ const getAllIssuesFromDB = async (allQuery: Query) => {
     const issuesResult = await pool.query(query, values);
     const issues = issuesResult.rows;
 
+    //RETRIEVING ALL THE REPORTER_IDS FROM issues AND AVOIDING DUPLICATES BY USING SET
     const reporterIds = [...new Set(issues.map((issue) => issue.reporter_id))];
 
     let reportersMap: Record<number, any> = {};
     if (reporterIds.length > 0) {
+
+        //FINDING INDIVIDUAL REPORTER INFOS
         const reportersResult = await pool.query(
             `SELECT id, name, role 
          FROM users 
          WHERE id = ANY($1)`,
             [reporterIds]
         );
-
+     //UPDATING THE REPORTER MAP WITH CORRESPONDING REPORTER INFOS
         reportersMap = reportersResult.rows.reduce((acc, reporter) => {
             acc[reporter.id] = reporter;
             return acc;
         }, {} as Record<number, any>);
     }
+
+    //FINAL FORMATTED ISSUES
     const formattedIssues = issues.map((issue) => ({
         id: issue.id,
         title: issue.title,
