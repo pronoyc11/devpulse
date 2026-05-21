@@ -1,6 +1,7 @@
 import express from "express";
 import { authRouter } from "./modules/auth/auth.route";
 import { issuesRouter } from "./modules/Issues/issues.route";
+import { globalError } from "./middlewares/globalError";
 
 
 const app = express();
@@ -15,4 +16,5 @@ app.use("/api/auth", authRouter);
 app.use("/api/issues", issuesRouter);
 
 
+app.use(globalError);
 export default app;

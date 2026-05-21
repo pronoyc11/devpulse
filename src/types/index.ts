@@ -5,3 +5,12 @@ export type Tresponse<T> = {
     data?: T,
     error?: unknown
 }
+
+export type ROLES = "contributor" | "maintainer";
+
+
+export type JwtPayload = {
+    id: number,
+    name: string,
+    role: string
+}

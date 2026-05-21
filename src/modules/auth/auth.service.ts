@@ -1,5 +1,6 @@
 import config from "../../config";
 import { pool } from "../../db";
+import type { JwtPayload } from "../../types";
 import type { Tuser } from "./auth.interface";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -35,7 +36,7 @@ const logInUserInDB = async (payload: { email: string, password: string }) => {
     }
     delete findUser.rows[0].password;
     const user = findUser.rows[0];
-    const jwtPayload = {
+    const jwtPayload: JwtPayload = {
         id: user.id,
         name: user.name,
         role: user.role

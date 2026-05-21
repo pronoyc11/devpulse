@@ -23,3 +23,8 @@ export const sendResponse = <T>(res: Response, data: Tresponse<T>) => {
         errors: data.error
     })
 }
+
+export const USER_ROLES = {
+    contributor: "contributor",
+    maintainer: "maintainer"
+} as const;
