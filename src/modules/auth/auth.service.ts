@@ -1,20 +1,49 @@
+import config from "../../config";
 import { pool } from "../../db";
 import type { Tuser } from "./auth.interface";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const signUpUserInDB = async (payload: Tuser) => {
 
     const { name, email, password, role } = payload;
 
-    
+    const hashPass = await bcrypt.hash(password, 10);
     const result = await pool.query(`
             INSERT INTO users(name,email,password,role)  
             VALUES ($1,$2,$3,COALESCE($4,'contributor')) RETURNING *      
-        `, [name, email, password, role]);
-    
+        `, [name, email, hashPass, role]);
+
     delete result.rows[0].password;
     return result;
 }
+const logInUserInDB = async (payload: { email: string, password: string }) => {
+    const { email, password } = payload;
 
+    const findUser = await pool.query(`
+        SELECT * FROM users WHERE email = $1
+        `, [email]);
+
+    if (findUser.rows.length == 0) {
+        throw new Error("User not found!");
+    }
+
+    const passMatch = await bcrypt.compare(password, findUser.rows[0].password);
+
+    if (!passMatch) {
+        throw new Error("Password did not match!");
+    }
+    delete findUser.rows[0].password;
+    const user = findUser.rows[0];
+    const jwtPayload = {
+        id: user.id,
+        name: user.name,
+        role: user.role
+    }
+    const token = jwt.sign(jwtPayload, config.secret as string, { expiresIn: "1d" });
+
+    return { token, user }
+}
 export const authService = {
-    signUpUserInDB
+    signUpUserInDB, logInUserInDB
 }

@@ -15,7 +15,7 @@ const signUpUser = async (req: Request, res: Response) => {
         sendResponse(res, {
             status: 201,
             success: true,
-            message: "User created Successfully",
+            message: "User registered successfully",
             data: result.rows[0]
         })
     } catch (error) {
@@ -28,7 +28,25 @@ const signUpUser = async (req: Request, res: Response) => {
     }
 }
 
-
+const logInUser = async (req: Request, res: Response) => {
+    try {
+        const result = await authService.logInUserInDB(req.body);
+        sendResponse(res, {
+            status: 201,
+            success: true,
+            message: "Login successful",
+            data: result
+        })
+    } catch (error) {
+        //Since error type in default is unknown
+        sendResponse(res, {
+            status: 500,
+            success: false,
+            message: getErrorMessage(error),
+            error: error
+        })
+    }
+}
 export const authController = {
-    signUpUser
+    signUpUser, logInUser
 }
