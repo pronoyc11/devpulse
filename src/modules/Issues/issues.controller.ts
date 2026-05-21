@@ -69,14 +69,36 @@ const getSingleIssue = async (req: Request, res: Response) => {
 const updateSingleIssue = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        
-        const result = await issuesService.updateSingleIssueInDB(id as string,req.user as JwtPayload);
+
+        const result = await issuesService.updateSingleIssueInDB(id as string, req.user as JwtPayload, req.body);
 
         sendResponse(res, {
             status: 200,
             success: true,
             message: "Issue updated successfully",
-            data: result
+            data: result.rows[0]
+        })
+
+    } catch (error) {
+        sendResponse(res, {
+            status: 500,
+            success: false,
+            message: getErrorMessage(error),
+            error: error
+        })
+    }
+}
+
+const deleteSingleIssue = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        const result = await issuesService.deleteSingleIssueInDB(id as string);
+        console.log(result);
+        sendResponse(res, {
+            status: 200,
+            success: true,
+            message: "Issue deleted successfully",
         })
 
     } catch (error) {
@@ -89,5 +111,5 @@ const updateSingleIssue = async (req: Request, res: Response) => {
     }
 }
 export const issuesController = {
-    createIssues, getAllIssues, getSingleIssue,updateSingleIssue
+    createIssues, getAllIssues, getSingleIssue, updateSingleIssue, deleteSingleIssue
 }
