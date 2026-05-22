@@ -1,6 +1,6 @@
 # DevPulse
 
-Live: https://dev-pulse-xi-six.vercel.app
+Live: https://dev-pulse-ivory.vercel.app/
 
 ## Overview
 

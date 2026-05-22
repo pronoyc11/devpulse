@@ -7,7 +7,7 @@ const createIssuesInDB = async (id: string, payload: Tissues) => {
     const { title, description, type, status } = payload;
 
     if (!title || !description || !type) {
-        throw new Error("Provide all the required fields.")
+        throw new Error("Provide all the required fields.");
     }
     //CHECK is already provided in the database,
     //This is added to prevent auto increment on failed query
