@@ -1,132 +1,264 @@
 # DevPulse
 
-Live: https://dev-pulse-ivory.vercel.app/
+Live URL: https://dev-pulse-ivory.vercel.app/
 
 ## Overview
 
-DevPulse is a lightweight issue-tracking and collaboration backend that provides RESTful APIs for authentication and issue management. It is designed for small teams and projects needing a simple, extensible tracker with token-based authentication.
+DevPulse is a RESTful issue tracking backend built with Node.js, Express, TypeScript, PostgreSQL, and JWT authentication. It supports role-based access for contributors and maintainers, allowing teams to report, browse, update, and manage project issues.
 
 ## Features
 
-- User authentication (register, login, JWT)
-- Create, read, update, and delete issues
-- Issue assignment and status tracking
-- Pagination and basic filtering for issue lists
-- Centralized error handling and middleware support
+- User registration and login
+- JWT-based authentication
+- Role-based authorization for contributors and maintainers
+- Create, view, update, and delete issues
+- Issue filtering by type and status
+- Issue sorting by newest or oldest
+- Reporter details included in issue responses
+- PostgreSQL tables initialized automatically on server startup
+- Centralized response formatting and global error handling
 
 ## Tech Stack
 
 - Runtime: Node.js
 - Language: TypeScript
-- Server: Express (or compatible HTTP framework)
-- Build: tsup / TypeScript
+- Framework: Express.js
+- Database: PostgreSQL
+- Database Client: pg
+- Authentication: JSON Web Token (JWT)
+- Password Hashing: bcrypt
+- Middleware: cors, dotenv
+- Build Tool: tsup
+- Development Runner: tsx
 - Deployment: Vercel
-- Database: PostgreSQL / MySQL / SQLite (via an ORM) or MongoDB (document store)
 
-## Setup
+## Setup Steps
 
-Prerequisites:
+### Prerequisites
 
-- Node.js >= 16
-- npm or yarn
-- A running database (Postgres/MySQL/SQLite/MongoDB) if using persistence
+- Node.js
+- npm
+- PostgreSQL database
 
-Local setup:
+### Installation
 
-1. Install dependencies
+1. Clone the repository.
+
+```bash
+git clone <repository-url>
+cd DevPulse
+```
+
+2. Install dependencies.
 
 ```bash
 npm install
 ```
 
-2. Create an `.env` file based on the environment variables used by the project (example keys):
+3. Create a `.env` file in the project root.
 
-```
+```env
 PORT=3000
-DATABASE_URL=postgres://user:pass@localhost:5432/devpulse
-JWT_SECRET=your_jwt_secret
+CONNECTION_STRING=your_postgresql_connection_string
+SECRET=your_jwt_secret
+EXPIRE=1d
 ```
 
-3. Build and run (development)
+4. Run the project in development mode.
 
 ```bash
 npm run dev
 ```
 
-3a. Build for production
+5. Build the project for production.
 
 ```bash
 npm run build
+```
+
+6. Start the production build.
+
+```bash
 npm start
 ```
 
 ## API Endpoints
 
-Authentication
+Base URL:
 
-- POST /api/auth/register — Register a new user (public)
-	- Body: { "name", "email", "password" }
+```text
+https://dev-pulse-ivory.vercel.app
+```
 
-- POST /api/auth/login — Authenticate and receive JWT (public)
-	- Body: { "email", "password" }
+### Health Check
 
-- GET /api/auth/me — Get current user (requires `Authorization: Bearer <token>`)
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| GET | `/` | Public | Returns a welcome message for the API. |
 
-Issues
+### Authentication
 
-- GET /api/issues — List issues (supports pagination & filters)
-	- Query: `page`, `limit`, `status`, `assigneeId`
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| POST | `/api/auth/signup` | Public | Register a new user. |
+| POST | `/api/auth/login` | Public | Login a user and return an access token. |
 
-- GET /api/issues/:id — Get issue by ID
+#### Signup Body
 
-- POST /api/issues — Create a new issue (requires auth)
-	- Body: { "title", "description", "priority", "assigneeId" }
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "password123",
+  "role": "contributor"
+}
+```
 
-- PUT /api/issues/:id — Update an issue (requires auth)
-	- Body: partial issue fields to update
+`role` is optional. Allowed values are `contributor` and `maintainer`. If no role is provided, the user is created as a `contributor`.
 
-- DELETE /api/issues/:id — Delete an issue (requires auth/roles)
+#### Login Body
 
-Notes:
+```json
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
 
-- All protected endpoints require `Authorization: Bearer <JWT>` header.
-- Responses follow a consistent response wrapper via `utility/sendResponse.ts`.
+### Issues
 
-## Database Schema (Summary)
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| POST | `/api/issues` | Contributor, Maintainer | Create a new issue. |
+| GET | `/api/issues` | Public | Get all issues. Supports filtering and sorting. |
+| GET | `/api/issues/:id` | Public | Get a single issue by ID. |
+| PATCH | `/api/issues/:id` | Contributor, Maintainer | Update an issue. |
+| DELETE | `/api/issues/:id` | Maintainer | Delete an issue. |
 
-Users
+Protected issue routes require an `Authorization` header containing the JWT token returned from login.
 
-- `users` collection/table
-	- `id` (PK)
-	- `name` (string)
-	- `email` (string, unique)
-	- `password_hash` (string)
-	- `created_at` (timestamp)
+```text
+Authorization: <token>
+```
 
-Issues
+#### Create Issue Body
 
-- `issues` collection/table
-	- `id` (PK)
-	- `title` (string)
-	- `description` (text)
-	- `status` (enum: open|in_progress|closed)
-	- `priority` (enum: low|medium|high)
-	- `reporter_id` (FK -> users.id)
-	- `assignee_id` (FK -> users.id, nullable)
-	- `created_at` (timestamp)
-	- `updated_at` (timestamp)
+```json
+{
+  "title": "Login button is not working",
+  "description": "Clicking the login button does not submit the form.",
+  "type": "bug",
+  "status": "open"
+}
+```
 
-Optional (Comments / Activity)
+Required fields are `title`, `description`, and `type`.
 
-- `comments` (if implemented)
-	- `id`, `issue_id`, `author_id`, `body`, `created_at`
+Allowed `type` values:
 
-## Notes & Conventions
+- `bug`
+- `feature_request`
 
-- API routes are organized under `modules/` by feature (`auth`, `Issues`).
-- Middleware includes authentication and global error handling (`middlewares/`).
-- Replace the database adapter/config in `db/index.ts` to match your chosen datastore.
+Allowed `status` values:
 
----
+- `open`
+- `in_progress`
+- `resolved`
 
-If you'd like, I can also add example cURL requests or Postman collection entries for the endpoints, or wire a simple database example to `db/index.ts`.
+If no status is provided during creation, the issue is created with `open` status.
+
+#### Get Issues Query Parameters
+
+| Query | Allowed Values | Description |
+| --- | --- | --- |
+| `sort` | `newest`, `oldest` | Sort issues by creation date. Defaults to `newest`. |
+| `type` | `bug`, `feature_request` | Filter issues by type. |
+| `status` | `open`, `in_progress`, `resolved` | Filter issues by status. |
+
+Example:
+
+```text
+GET /api/issues?type=bug&status=open&sort=newest
+```
+
+#### Update Issue Body
+
+Contributors can update only their own open issues and may update `title`, `description`, and `type`.
+
+```json
+{
+  "title": "Updated issue title",
+  "description": "Updated issue description",
+  "type": "feature_request"
+}
+```
+
+Maintainers can update issue details and status.
+
+```json
+{
+  "title": "Updated issue title",
+  "description": "Updated issue description",
+  "type": "bug",
+  "status": "in_progress"
+}
+```
+
+## Database Schema Summary
+
+The application uses PostgreSQL and creates the required tables when the server starts.
+
+### users
+
+| Column | Type | Constraints |
+| --- | --- | --- |
+| `id` | SERIAL | Primary key |
+| `name` | VARCHAR(20) | Required |
+| `email` | VARCHAR(20) | Required, unique |
+| `password` | TEXT | Required, stores hashed password |
+| `role` | VARCHAR(20) | Defaults to `contributor`; must be `contributor` or `maintainer` |
+| `created_at` | TIMESTAMP | Defaults to current timestamp |
+| `updated_at` | TIMESTAMP | Defaults to current timestamp |
+
+### issues
+
+| Column | Type | Constraints |
+| --- | --- | --- |
+| `id` | SERIAL | Primary key |
+| `title` | TEXT | Required |
+| `description` | TEXT | Required |
+| `type` | VARCHAR(20) | Required; must be `bug` or `feature_request` |
+| `status` | VARCHAR(20) | Defaults to `open`; must be `open`, `in_progress`, or `resolved` |
+| `reporter_id` | INT | References `users(id)` with cascade delete |
+| `created_at` | TIMESTAMP | Defaults to current timestamp |
+| `updated_at` | TIMESTAMP | Defaults to current timestamp |
+
+## Project Structure
+
+```text
+src/
+  app.ts
+  server.ts
+  config/
+  db/
+  middlewares/
+  modules/
+    auth/
+    Issues/
+  types/
+  utility/
+```
+
+## Response Format
+
+Most API responses follow this structure:
+
+```json
+{
+  "success": true,
+  "message": "Operation message",
+  "data": {}
+}
+```
+
+Error responses include an `errors` field with the error details.
