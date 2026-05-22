@@ -9,6 +9,11 @@ const createIssuesInDB = async (id: string, payload: Tissues) => {
     if (!title || !description || !type) {
         throw new Error("Provide all the required fields.")
     }
+    //CHECK is already provided in the database,
+    //This is added to prevent auto increment on failed query
+    if (type !== 'bug' && type !== 'feature_request') {
+        throw new Error("type can only be bug or feature_request");
+    }
     const result = await pool.query(
         `
         INSERT INTO issues(title,description,type,status,reporter_id) 

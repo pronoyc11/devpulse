@@ -1,7 +1,9 @@
+import type { Query } from "../../types"
+
 export interface Tissues {
     title: string,
     description: string,
-    type: string,
+    type:'bug' | 'feature_request',
     status?: string
 }
 
