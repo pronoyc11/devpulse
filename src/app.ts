@@ -2,7 +2,7 @@ import express, { type Request, type Response } from "express";
 import { authRouter } from "./modules/auth/auth.route";
 import { issuesRouter } from "./modules/Issues/issues.route";
 import { globalError } from "./middlewares/globalError";
-
+import cors from "cors";
 
 const app = express();
 
@@ -10,6 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.text());
+app.use(cors());
 
 //API_END_POINTS
 app.get("/",(req:Request,res:Response)=>{

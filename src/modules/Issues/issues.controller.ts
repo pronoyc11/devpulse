@@ -50,11 +50,11 @@ const getAllIssues = async (req: Request, res: Response) => {
 const getSingleIssue = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        
-         const result = await issuesService.getSingleIssueFromDB(id as string)
+
+        const result = await issuesService.getSingleIssueFromDB(id as string)
         return res.status(200).json({
             success: true,
-            data:result
+            data: result
         })
     } catch (error) {
         sendResponse(res, {
@@ -69,7 +69,6 @@ const getSingleIssue = async (req: Request, res: Response) => {
 const updateSingleIssue = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-
         const result = await issuesService.updateSingleIssueInDB(id as string, req.user as JwtPayload, req.body);
 
         sendResponse(res, {
@@ -94,7 +93,6 @@ const deleteSingleIssue = async (req: Request, res: Response) => {
         const { id } = req.params;
 
         const result = await issuesService.deleteSingleIssueInDB(id as string);
-        console.log(result);
         sendResponse(res, {
             status: 200,
             success: true,

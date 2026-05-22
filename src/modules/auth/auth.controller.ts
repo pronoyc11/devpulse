@@ -32,7 +32,7 @@ const logInUser = async (req: Request, res: Response) => {
     try {
         const result = await authService.logInUserInDB(req.body);
         sendResponse(res, {
-            status: 201,
+            status: 200,
             success: true,
             message: "Login successful",
             data: result

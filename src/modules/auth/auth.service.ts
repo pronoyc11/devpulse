@@ -8,7 +8,9 @@ import jwt from "jsonwebtoken";
 const signUpUserInDB = async (payload: Tuser) => {
 
     const { name, email, password, role } = payload;
-
+    if(!name || !email || !password){
+        throw new Error("Provide all the required fields.")
+    }
     const hashPass = await bcrypt.hash(password, 10);
     const result = await pool.query(`
             INSERT INTO users(name,email,password,role)  

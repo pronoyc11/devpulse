@@ -6,6 +6,9 @@ import type { Tissues, TissuesFull } from "./issues.interface";
 const createIssuesInDB = async (id: string, payload: Tissues) => {
     const { title, description, type, status } = payload;
 
+    if (!title || !description || !type) {
+        throw new Error("Provide all the required fields.")
+    }
     const result = await pool.query(
         `
         INSERT INTO issues(title,description,type,status,reporter_id) 
@@ -39,7 +42,7 @@ const getAllIssuesFromDB = async (allQuery: Query) => {
     }
 
     if (conditions.length > 0) {
-    //ADDING THE CONDITIONS TO THE QUERY
+        //ADDING THE CONDITIONS TO THE QUERY
         query += ` WHERE ${conditions.join(" AND ")}`;
     }
 
@@ -66,7 +69,7 @@ const getAllIssuesFromDB = async (allQuery: Query) => {
          WHERE id = ANY($1)`,
             [reporterIds]
         );
-     //UPDATING THE REPORTER MAP WITH CORRESPONDING REPORTER INFOS
+        //UPDATING THE REPORTER MAP WITH CORRESPONDING REPORTER INFOS
         reportersMap = reportersResult.rows.reduce((acc, reporter) => {
             acc[reporter.id] = reporter;
             return acc;
@@ -86,7 +89,7 @@ const getAllIssuesFromDB = async (allQuery: Query) => {
     }));
 
     if (formattedIssues.length === 0) {
-        throw new Error("No issues reported yet");
+        throw new Error("No issues");
     }
     return formattedIssues;
 };
@@ -109,10 +112,10 @@ const getSingleIssueFromDB = async (id: string) => {
             `,
         [issue.reporter_id]
     );
-    if(reporterFound.rows.length === 0){
-           
+    if (reporterFound.rows.length === 0) {
+
         throw new Error("Reporter not found!");
-    
+
     }
     const reporter = reporterFound.rows[0];
 
@@ -139,14 +142,13 @@ const updateSingleIssueInDB = async (
     user: JwtPayload,
     payload: TissuesFull
 ) => {
-   
     const findIssue = await pool.query(
         `
         SELECT * FROM issues WHERE id=$1
         `,
         [id]
     );
-    if(findIssue.rows.length ===0){
+    if (findIssue.rows.length === 0) {
         throw new Error("No issues found on this id!");
     }
     const issue = findIssue.rows[0];
@@ -167,9 +169,9 @@ const updateSingleIssueInDB = async (
         }
         const updateIssue = await pool.query(
             `
-           UPDATE issues SET title = COALESCE($1,title),description=COALESCE($2,description),type=COALESCE($3,type) RETURNING *
+           UPDATE issues SET title = COALESCE($1,title),description=COALESCE($2,description),type=COALESCE($3,type) WHERE id=$4 RETURNING *
         `,
-            [title, description, type]
+            [title, description, type, id]
         );
         return updateIssue;
     }
@@ -183,11 +185,13 @@ const updateSingleIssueInDB = async (
               status=COALESCE($4,status),
         created_at=COALESCE($5,created_at),
         updated_at=COALESCE($6,updated_at)
+
+        WHERE id=$7
            RETURNING *
         `,
         [title, description, type, status,
             created_at,
-            updated_at]
+            updated_at, id]
     );
     return updateIssueByMaintainer;
 };
