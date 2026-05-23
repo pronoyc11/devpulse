@@ -229,32 +229,5 @@ The application uses PostgreSQL and creates the required tables when the server 
 | `created_at` | TIMESTAMP | Defaults to current timestamp |
 | `updated_at` | TIMESTAMP | Defaults to current timestamp |
 
-## Project Structure
 
-```text
-src/
-  app.ts
-  server.ts
-  config/
-  db/
-  middlewares/
-  modules/
-    auth/
-    Issues/
-  types/
-  utility/
-```
-
-## Response Format
-
-Most API responses follow this structure:
-
-```json
-{
-  "success": true,
-  "message": "Operation message",
-  "data": {}
-}
-```
-
-Error responses include an `errors` field with the error details.
+### Happy Coding.
