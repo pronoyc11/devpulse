@@ -1,6 +1,6 @@
 # DevPulse
 
-Live URL: https://dev-pulse-ivory.vercel.app/
+Live URL: https://devpulse-4twr.onrender.com/
 
 ## Overview
 
@@ -9,28 +9,25 @@ DevPulse is a RESTful issue tracking backend built with Node.js, Express, TypeSc
 ## Features
 
 - User registration and login
-- JWT-based authentication
-- Role-based authorization for contributors and maintainers
-- Create, view, update, and delete issues
-- Issue filtering by type and status
-- Issue sorting by newest or oldest
-- Reporter details included in issue responses
-- PostgreSQL tables initialized automatically on server startup
-- Centralized response formatting and global error handling
+- User has two roles : contributor and maintainer
+- Role based access control over query and operations
+- Issues can be created, read, updated and deleted
+- Control over above operations is authenticated properly by jwt token
+- contributors can create accounts, issues, login or view all issues.
+- maintainer has All contributor permissions along with additional access over issue operations and internal metrics
 
 ## Tech Stack
 
-- Runtime: Node.js
-- Language: TypeScript
-- Framework: Express.js
-- Database: PostgreSQL
-- Database Client: pg
-- Authentication: JSON Web Token (JWT)
-- Password Hashing: bcrypt
-- Middleware: cors, dotenv
-- Build Tool: tsup
-- Development Runner: tsx
-- Deployment: Vercel
+- node js as runtime
+- typescript as language
+- express js framwork
+- PostgreSQL as database
+- JSON Web Token (JWT) for authentication
+- bcrypt for password hashing
+- dotenv, cors as middleware
+- tsup as build tool
+- tsx as Development Runner
+- Render for deployment
 
 ## Setup Steps
 
@@ -61,7 +58,6 @@ npm install
 PORT=3000
 CONNECTION_STRING=your_postgresql_connection_string
 SECRET=your_jwt_secret
-EXPIRE=1d
 ```
 
 4. Run the project in development mode.
@@ -87,7 +83,7 @@ npm start
 Base URL:
 
 ```text
-https://dev-pulse-ivory.vercel.app
+https://devpulse-4twr.onrender.com/
 ```
 
 ### Health Check

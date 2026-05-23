@@ -14,6 +14,9 @@ const createIssuesInDB = async (id: string, payload: Tissues) => {
     if (type !== 'bug' && type !== 'feature_request') {
         throw new Error("type can only be bug or feature_request");
     }
+    if (title.length > 150) {
+        throw new Error("title length can't be more than 150");
+    }
     const result = await pool.query(
         `
         INSERT INTO issues(title,description,type,status,reporter_id) 
