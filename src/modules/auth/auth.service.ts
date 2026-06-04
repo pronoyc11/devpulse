@@ -12,6 +12,9 @@ const signUpUserInDB = async (payload: Tuser) => {
     if (!name || !email || !password) {
         throw new Error("Provide all the required fields.")
     }
+    if(name.length>250 || email.length>250){
+        throw new Error("name and email can't be longer than 250");
+    }
     const hashPass = await bcrypt.hash(password, 10);
     const userExist = await pool.query(`
         select * from users where email=$1

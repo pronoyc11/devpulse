@@ -15,6 +15,7 @@ DevPulse is a RESTful issue tracking backend built with Node.js, Express, TypeSc
 - Control over above operations is authenticated properly by jwt token
 - contributors can create accounts, issues, login or view all issues.
 - maintainer has All contributor permissions along with additional access over issue operations and internal metrics
+- Has feature of global error handling 
 
 ## Tech Stack
 
