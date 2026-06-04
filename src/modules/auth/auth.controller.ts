@@ -20,7 +20,7 @@ const signUpUser = async (req: Request, res: Response) => {
         })
     } catch (error) {
         sendResponse(res, {
-            status: 500,
+            status: 400,
             success: false,
             message: getErrorMessage(error),
             error: error
@@ -40,7 +40,7 @@ const logInUser = async (req: Request, res: Response) => {
     } catch (error) {
         //Since error type in default is unknown
         sendResponse(res, {
-            status: 500,
+            status: 400,
             success: false,
             message: getErrorMessage(error),
             error: error

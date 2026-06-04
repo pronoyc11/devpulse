@@ -19,7 +19,7 @@ const createIssues = async (req: Request, res: Response) => {
         })
     } catch (error) {
         sendResponse(res, {
-            status: 500,
+            status: 400,
             success: false,
             message: getErrorMessage(error),
             error: error
@@ -34,31 +34,33 @@ const getAllIssues = async (req: Request, res: Response) => {
         const result = await issuesService.getAllIssuesFromDB(req.query as Query);
         return res.status(200).json({
             success: true,
-            data: result
-        })
+             message: "Issues retrived successfully",
+             data: result
+            })
     } catch (error) {
         sendResponse(res, {
-            status: 500,
+            status: 400,
             success: false,
             message: getErrorMessage(error),
             error: error
         })
     }
-
+    
 }
 
 const getSingleIssue = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-
+        
         const result = await issuesService.getSingleIssueFromDB(id as string)
         return res.status(200).json({
             success: true,
+            message: "Issue retrived successfully",
             data: result
         })
     } catch (error) {
         sendResponse(res, {
-            status: 500,
+            status: 400,
             success: false,
             message: getErrorMessage(error),
             error: error
@@ -80,7 +82,7 @@ const updateSingleIssue = async (req: Request, res: Response) => {
 
     } catch (error) {
         sendResponse(res, {
-            status: 500,
+            status: 400,
             success: false,
             message: getErrorMessage(error),
             error: error
@@ -101,7 +103,7 @@ const deleteSingleIssue = async (req: Request, res: Response) => {
 
     } catch (error) {
         sendResponse(res, {
-            status: 500,
+            status: 400,
             success: false,
             message: getErrorMessage(error),
             error: error
