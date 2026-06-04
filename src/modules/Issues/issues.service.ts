@@ -175,6 +175,9 @@ const updateSingleIssueInDB = async (
         if (issue.status !== "open") {
             throw new Error("This issue is not open for interacting!");
         }
+        if(status){
+            throw new Error("Be a maintainer to update status.");
+        }
         const updateIssue = await pool.query(
             `
            UPDATE issues SET title = COALESCE($1,title),description=COALESCE($2,description),type=COALESCE($3,type) WHERE id=$4 RETURNING *
