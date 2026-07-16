@@ -30,6 +30,29 @@ DevPulse is a RESTful issue tracking backend built with Node.js, Express, TypeSc
 - tsx as Development Runner
 - Render for deployment
 
+## Project Dependencies
+
+### Dependencies
+
+- bcrypt
+- cors
+- dotenv
+- express
+- jsonwebtoken
+- pg
+- tsup
+
+### Development Dependencies
+
+- @types/bcrypt
+- @types/cors
+- @types/express
+- @types/jsonwebtoken
+- @types/node
+- @types/pg
+- tsx
+- typescript
+
 ## Setup Steps
 
 ### Prerequisites
